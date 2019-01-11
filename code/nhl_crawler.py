@@ -4,11 +4,10 @@ import requests
 import json
 
 
-baseurl = "https://statsapi.web.nhl.com"
+baseurl = "https://statsapi.web.nhl.com/api/v1/"
 
 def get_game_ids(start_date, end_date):
     requrl = baseurl +\
-             "/api/v1/" +\
              "schedule?" +\
              "startDate={0}".format(start_date) +\
              "&endDate={0}".format(end_date) +\
@@ -25,7 +24,15 @@ def get_game_ids(start_date, end_date):
 
 
 def get_game_pbp(gid):
-    pass
+    requrl = baseurl +\
+             "game/" +\
+             str(gid) +\
+             "/feed/live"
+
+    r = requests.get(requrl)
+    data = r.json()
+
+    return data
 
 
 def main():
@@ -34,6 +41,10 @@ def main():
 
     games = get_game_ids(start_date, end_date)
     print(games)
+
+    pbp = get_game_pbp(games[0])
+    import pdb; pdb.set_trace()
+    print(pbp)
 
 
 if __name__ == "__main__":
