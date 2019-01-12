@@ -6,6 +6,7 @@ import json
 
 baseurl = "https://statsapi.web.nhl.com/api/v1/"
 
+
 def get_game_ids(start_date, end_date):
     requrl = baseurl +\
              "schedule?" +\
@@ -24,27 +25,30 @@ def get_game_ids(start_date, end_date):
 
 
 def get_game_pbp(gid):
-    requrl = baseurl +\
-             "game/" +\
-             str(gid) +\
-             "/feed/live"
+    if isinstance(gid, list):
+        pbps = []
+        for _g in gid:
+            pbps += [get_game_pbp(_g)]
+        return pbps
 
-    r = requests.get(requrl)
-    data = r.json()
+    else:
+        requrl = baseurl +\
+                 "game/" +\
+                 str(gid) +\
+                 "/feed/live"
+        r = requests.get(requrl)
+        data = r.json()
 
-    return data
+        pbp = data['liveData']['plays']['allPlays']
+        return pbp
 
 
 def main():
-    start_date = "2017-01-01"
-    end_date = "2017-01-02"
+    start_date = "2017-08-01"
+    end_date = "2018-08-01"
 
     games = get_game_ids(start_date, end_date)
-    print(games)
-
-    pbp = get_game_pbp(games[0])
-    import pdb; pdb.set_trace()
-    print(pbp)
+    pbp = get_game_pbp(games)
 
 
 if __name__ == "__main__":
